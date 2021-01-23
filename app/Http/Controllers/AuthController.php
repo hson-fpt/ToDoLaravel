@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Token;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,6 +19,11 @@ class AuthController extends Controller
         $password = $request["password"];
 
         $user = User::where("username", $username)->first();
-        dd(Hash::check($password, $user->password));
+        if(Hash::check($password, $user->password)) {
+            $token = app(Token::class);
+            $token->user_id = $user->id;
+            $token->value = Str::random(60);
+            $token->save();
+        }
     }
 }
